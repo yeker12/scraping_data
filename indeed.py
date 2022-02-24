@@ -12,14 +12,15 @@ def change_num(to_change_num):
     return int(changed_num);
 
 
-def extract_indeed_pages():
+def extract_pages():
     result = requests.get(URL)
     soup = BeautifulSoup(result.text, "html.parser");
     search_count_pages = soup.find("div", {"id": "searchCountPages"});
 
     total_jobs = search_count_pages.string.split()[-1];
     total_jobs = total_jobs.split()[-1][:-1];
-    max_page = (change_num(total_jobs) // LIMIT) + 1
+    max_page = (change_num(total_jobs) // LIMIT) + 1;
+    print(max_page);
     return max_page;
 
 
@@ -34,15 +35,21 @@ def extract_job(html):
 
 def extract_indeed_jobs(last_page):
     jobs = []
-    # for page in range(last_page):
-    print(f"Scrapping page: ");
-    result = requests.get(f"{URL}&start={12 * LIMIT}");
-    soup = BeautifulSoup(result.text, "html.parser");
-    results = soup.find_all("a", {"class": "fs-unmask"})
-    for result in results:
-        job = extract_job(result);
-        jobs.append(job);
+    for page in range(last_page):
+        print(f"Scrapping page: ");
+        result = requests.get(f"{URL}&start={12 * LIMIT}");
+        soup = BeautifulSoup(result.text, "html.parser");
+        results = soup.find_all("a", {"class": "fs-unmask"})
+        for result in results:
+            job = extract_job(result);
+            jobs.append(job);
     return jobs;
 
 
+def get_jobs():
+    last_page = extract_pages();
+    print(last_page);
+    jobs = extract_indeed_jobs(last_page);
+    print(jobs);
+    return jobs;
 
